@@ -1,9 +1,15 @@
 #!/usr/bin/env python
+import os
 import click
 import cv2
 
+__version_info__ = (1, 0, 0)
+__version__ = '.'.join(map(str, __version_info__))
+
 def reverse_all_files(input: str, output: str):
-    import os
+    if os.path.isfile(input):
+        click.echo(f"{input} is a file. Please ***not*** use -d option to reverse a file")
+        return
 
     if not os.path.exists(input):
         click.echo(f"Directory {input} does not exist")
@@ -26,6 +32,14 @@ def reverse_all_files(input: str, output: str):
         click.echo(f"Reverse {input_path} to {output_path}")
 
 def reverse_file(input: str, output: str):
+    if not os.path.exists(input):
+        click.echo(f"File {input} does not exist")
+        return
+    
+    if os.path.isdir(input):
+        click.echo(f"{input} is a directory. Please use -d option to reverse all files in the directory")
+        return
+    
     if not output:
         output = input.split('.')[0] + '_reverse.' + input.split('.')[1]
 
@@ -37,6 +51,7 @@ def reverse_file(input: str, output: str):
 
 
 @click.group()
+@click.version_option(__version__)
 def cli():
     pass
 
