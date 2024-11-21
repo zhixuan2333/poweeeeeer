@@ -1,0 +1,58 @@
+name: Publish Docker image
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  REGISTRY_IMAGE: zhixuan2333/poweeeeeer
+  tags: |
+    type=schedule
+    type=semver,pattern={{version}}
+    type=semver,pattern={{major}}.{{minor}}
+    type=semver,pattern={{major}}
+    type=ref,event=branch
+    type=ref,event=pr
+    type=sha
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+          
+    if: github.repository == 'zhixuan2333/poweeeeeer'
+    steps:
+        # 静的なファイルとして保存する
+      - uses: actions/checkout@v3
+        # メタデータを抽出する
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: ${{ env.TAGS }}
+        # ghcr.ioへログインする
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        # ビルド
+      - name: Build Docker Image
+        run: |
+          docker build --tag ghcr.io/${{ github.repository_owner }}/poweeeeeer:latest \
+          --tag ghcr.io/${{ github.repository_owner }}/poweeeeeer:$${{ steps.meta.outputs.version }} \
+          .
+        # pushする
+      - name: Push Docker Image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/poweeeeeer:latest
+          docker push ghcr.io/${{ github.repository_owner }}/poweeeeeer:$${{ steps.meta.outputs.version }}
