@@ -15,6 +15,12 @@ pip install -r requirements.txt
 ./poweeeeer.py --help
 ```
 
+### With Docker
+
+```
+docker run --rm -it -v $(pwd):/mnt/data ghcr.io/zhixuan2333/poweeeeeer:latest
+```
+
 
 ### Advance
 Make a python env.

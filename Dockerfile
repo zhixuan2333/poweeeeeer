@@ -14,4 +14,7 @@ COPY . /app
 
 RUN chmod +x poweeeeer.py
 
-ENTRYPOINT [ "./poweeeeer.py" ]
+WORKDIR /mnt/data
+
+ENTRYPOINT [ "/app/poweeeeer.py" ]
+CMD [ "--help" ]
