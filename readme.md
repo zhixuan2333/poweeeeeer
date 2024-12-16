@@ -2,7 +2,8 @@
 
 ## What does poweeeer do.
 
-- reverse color of file and directory
+- reverse color of file and directory (form every image to png)
+- convert pdf to svg
 
 ## Quick start
 
@@ -46,6 +47,10 @@ chmod +x ./poweeeeer.py
 ```
 
 ## Revision
+
+### 2024-12-16
+- Change reverse command to output every image to `.png`
+- 🎉 Support convert pdf to svg
 
 ### 2024-11-14
 - Init all project

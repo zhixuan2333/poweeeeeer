@@ -6,6 +6,18 @@ import cv2
 __version_info__ = (1, 2, 0)
 __version__ = '.'.join(map(str, __version_info__))
 
+import pathlib
+import glob
+import subprocess
+
+def convert_pdf_to_svg(source: str):
+    for pdf in glob.glob(source):
+        pdf_path = pathlib.Path(pdf) 
+        svg_path = pathlib.Path(pdf.replace('pdf', 'svg')) 
+        print('converting {} to {} ...'.format(pdf_path, svg_path))
+        subprocess.run( ["pdf2svg", pdf_path, svg_path] )
+
+
 def reverse_all_files(source: str, output: str):
     if os.path.isfile(source):
         click.echo(f"{source} is a file. Please ***not*** use -d option to reverse a file")
@@ -26,7 +38,7 @@ def reverse_all_files(source: str, output: str):
     
     for file in files:
         input_path = os.path.join(source, file)
-        output_path = os.path.join(output, file)
+        output_path = os.path.join(output, file.split('.')[0] + '_reverse.png')
         reverse_file(input_path, output_path)
 
         click.echo(f"Reverse {input_path} to {output_path}")
@@ -41,7 +53,7 @@ def reverse_file(source: str, output: str):
         return
     
     if not output:
-        output = source.split('.')[0] + '_reverse.' + source.split('.')[1]
+        output = source.split('.')[0] + '_reverse.png'
 
     file = cv2.imread(source)
     reverse_image = cv2.bitwise_not(file)
@@ -72,6 +84,18 @@ def reverse(source: str, directory: bool, output: str):
         reverse_all_files(source, output)
     else:
         reverse_file(source, output)
+
+
+@cli.command()
+@click.argument('source')
+def convert(source: str):
+    """Convert pdf to svg
+
+    \b
+    Example:
+        ./poweeeeer.py convert *.pdf
+    """
+    convert_pdf_to_svg(source)
 
 if __name__ == '__main__':
     cli()
